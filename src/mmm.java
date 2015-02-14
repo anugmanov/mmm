@@ -138,7 +138,7 @@ public class mmm{
 	
 	
 	public StringBuffer execCmd(){
-		String cmd = "lsblk -lnr -o name,size,type,mountpoint";//BUG with mountpoint
+		String cmd = "lsblk -lnr -o name,size,type,mountpoint";//fixed bug with mountpoints
 		StringBuffer res = new StringBuffer();
 		Process p;
 		try {
@@ -152,7 +152,11 @@ public class mmm{
 				if(line.indexOf("/") == -1){ //if didn't mount - place NOMOUNT
 					res.append(line + "NOMOUNT"+ ' ');
 				}
-				else res.append(line + ' ');
+				else { //replace all whitespaces with underscores - to fix whitespace-splitting
+					String tmpline = line.substring(line.indexOf("/"),line.length()).replace(' ', '_');
+					res.append(line.substring(0, line.indexOf("/")) + tmpline + ' ');
+					tmpline = null; //free memory
+				}
 			}
 		}
 		catch(Exception e){
